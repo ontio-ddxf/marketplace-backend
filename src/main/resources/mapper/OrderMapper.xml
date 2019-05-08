@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ontology.mapper.OrderMapper">
+  <resultMap id="BaseResultMap" type="com.ontology.entity.Order">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="order_id" jdbcType="VARCHAR" property="orderId" />
+    <result column="buyer_ontid" jdbcType="VARCHAR" property="buyerOntid" />
+    <result column="seller_ontid" jdbcType="VARCHAR" property="sellerOntid" />
+    <result column="buy_tx" jdbcType="LONGVARCHAR" property="buyTx" />
+    <result column="sell_tx" jdbcType="LONGVARCHAR" property="sellTx" />
+    <result column="recv_token_tx" jdbcType="LONGVARCHAR" property="recvTokenTx" />
+    <result column="recv_msg_tx" jdbcType="LONGVARCHAR" property="recvMsgTx" />
+    <result column="cancel_tx" jdbcType="LONGVARCHAR" property="cancelTx" />
+    <result column="buy_event" jdbcType="LONGVARCHAR" property="buyEvent" />
+    <result column="sell_event" jdbcType="LONGVARCHAR" property="sellEvent" />
+    <result column="recv_token_event" jdbcType="LONGVARCHAR" property="recvTokenEvent" />
+    <result column="recv_msg_event" jdbcType="LONGVARCHAR" property="recvMsgEvent" />
+    <result column="cancel_event" jdbcType="LONGVARCHAR" property="cancelEvent" />
+    <result column="buy_date" jdbcType="TIMESTAMP" property="buyDate" />
+    <result column="sell_date" jdbcType="TIMESTAMP" property="sellDate" />
+    <result column="recv_token_date" jdbcType="TIMESTAMP" property="recvTokenDate" />
+    <result column="recv_msg_date" jdbcType="TIMESTAMP" property="recvMsgDate" />
+    <result column="cancel_date" jdbcType="TIMESTAMP" property="cancelDate" />
+    <result column="state" jdbcType="VARCHAR" property="state" />
+  </resultMap>
+
+  <select id="getOrderList" parameterType="String" resultMap="OrderResultMap">
+         select order_id,buyer_ontid,seller_ontid,buy_date,state,
+         CASE WHEN recv_msg_tx IS NULL THEN 0
+	ELSE
+		1
+END
+AS is_recv_msg,
+CASE WHEN recv_token_tx IS NULL THEN 0
+	ELSE
+		1
+END
+AS is_recv_token
+          from tbl_order_sync
+          where ${queryType}=#{ontid}
+     </select>
+  <!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
+  <resultMap type="com.ontology.entity.dto.OrderListResp" id="OrderResultMap">
+    <id property="orderId" column="order_id"/>
+    <result column="buyer_ontid" jdbcType="VARCHAR" property="dataDemander" />
+    <result column="seller_ontid" jdbcType="VARCHAR" property="dataProvider" />
+    <result column="buy_date" jdbcType="TIMESTAMP" property="buyDate" />
+    <result column="state" jdbcType="VARCHAR" property="state" />
+    <result column="is_recv_msg" jdbcType="INTEGER" property="isRecvMsg" />
+    <result column="is_recv_token" jdbcType="INTEGER" property="isRecvToken" />
+    <collection property="dataIdList" ofType="com.ontology.entity.dto.OrderDataResp" select="getOrderDataList" column="order_id">
+      <!--<id property="id" column="id"/>-->
+      <result property="dataId" column="data_id"/>
+    </collection >
+  </resultMap>
+
+  <select id="getOrderDataList" parameterType="String" resultType="String">
+         select data_id
+          from tbl_order_data_sync where order_id = #{order_id}
+     </select>
+
+  <select id="getOrderList_COUNT" resultType="Long">
+    select count(0) from tbl_order_sync o where o.${queryType}=#{ontid}
+</select>
+
+</mapper>

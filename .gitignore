@@ -1,0 +1,15 @@
+.project
+.classpath
+.settings
+*.ipr
+.idea
+*.iws
+*.iml
+logs
+*~
+.DS_Store
+/target
+test-output
+.externalToolBuilders
+coverage-error.log
+NeoVmTest.json
