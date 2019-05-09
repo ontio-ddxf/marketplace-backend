@@ -1,9 +1,9 @@
 # marketplace-backend
 
 [接口规范](#接口规范)
-	- [工具接口](#工具接口)
-		- [查询订单](#查询订单)
-		- [获取数据](#获取数据)
+- [工具接口](#工具接口)
+    - [查询订单](#查询订单)
+    - [获取数据](#获取数据)
         
         
 ## 工具接口
@@ -94,7 +94,7 @@ method：GET
 2. 获取订单号对应的数据信息。
 
 ```text
-url：/api/v1/data-dealer/tools/data/{orderId=}&{ontid=}
+url：/api/v1/data-dealer/tools/data?{orderId=}&{ontid=}
 method：GET
 ```
 

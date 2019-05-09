@@ -40,6 +40,7 @@ END
 AS is_recv_token
           from tbl_order_sync
           where ${queryType}=#{ontid}
+          order by buy_date desc
      </select>
   <!-- 使用resultMap映射实体类和字段之间的一一对应关系 -->
   <resultMap type="com.ontology.entity.dto.OrderListResp" id="OrderResultMap">

@@ -56,6 +56,9 @@ public class ToolsServiceImpl implements ToolsService {
         if (!order.getBuyerOntid().equals(ontid)) {
             throw new OntIdException(action, ErrorInfo.NO_PERMISSION.descCN(), ErrorInfo.NO_PERMISSION.descEN(), ErrorInfo.NO_PERMISSION.code());
         }
+        if (StringUtils.isEmpty(order.getRecvMsgTx())) {
+            throw new OntIdException(action, ErrorInfo.NO_PERMISSION.descCN(), ErrorInfo.NO_PERMISSION.descEN(), ErrorInfo.NO_PERMISSION.code());
+        }
         String event = order.getSellEvent();
         if (StringUtils.isEmpty(event)) {
             throw new OntIdException(action, ErrorInfo.NOT_FOUND.descCN(), ErrorInfo.NOT_FOUND.descEN(), ErrorInfo.NOT_FOUND.code());

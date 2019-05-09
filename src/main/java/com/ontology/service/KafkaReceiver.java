@@ -109,6 +109,8 @@ public class KafkaReceiver {
                     } else if ("receiveToken".equals(method)) {
                         // receiveToken推送的事件
                         String exchangeId = states.getString(1);
+//                        String address = states.getString(3);
+//                        log.info(address);
                         String demander = String.format(Constant.ONTID_PREFIX,Address.parse(states.getString(3)).toBase58());
                         String provider = String.format(Constant.ONTID_PREFIX,Address.parse(states.getString(4)).toBase58());
 
