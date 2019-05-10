@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class KafkaReceiver {
     private ConfigParam configParam;
 
     @KafkaListener(topics = {"topic-ddxf"})
-    public void receiveMessage(ConsumerRecord<?, ?> record) {
+    public void receiveMessage(ConsumerRecord<?, ?> record, Acknowledgment ack) {
         log.info("ddxf入库：{}", Thread.currentThread().getName());
         try {
             String value = (String) record.value();
@@ -111,12 +112,13 @@ public class KafkaReceiver {
                         String exchangeId = states.getString(1);
 //                        String address = states.getString(3);
 //                        log.info(address);
-                        String demander = String.format(Constant.ONTID_PREFIX,Address.parse(states.getString(3)).toBase58());
-                        String provider = String.format(Constant.ONTID_PREFIX,Address.parse(states.getString(4)).toBase58());
+//                        log.info("event:{}",event);
+//                        String demander = String.format(Constant.ONTID_PREFIX,Address.parse(states.getString(3)).toBase58());
+//                        String provider = String.format(Constant.ONTID_PREFIX,Address.parse(states.getString(4)).toBase58());
 
                         order.setOrderId(exchangeId);
-                        order.setBuyerOntid(demander);
-                        order.setSellerOntid(provider);
+//                        order.setBuyerOntid(demander);
+//                        order.setSellerOntid(provider);
                         order.setState("sellerRecvTokenOnchain");
                         order.setRecvTokenDate(new Date());
                         order.setRecvTokenEvent(event.toJSONString());
@@ -147,6 +149,7 @@ public class KafkaReceiver {
                     }
                 }
             }
+            ack.acknowledge();
         } catch (Exception e) {
             e.printStackTrace();
         }

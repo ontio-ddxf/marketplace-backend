@@ -24,11 +24,14 @@ public class Test {
 //        log.info("{}",bytes);
 //        String result = new String(bytes,"utf-8");
 //        log.info("{}",result);
-//        String a = new String(Helper.hexToBytes("3664666335316561306436353431383862306663383261663335613263366139"),"utf-8");
-//        log.info("{}",a);0f774d321616d223
-        SDKUtil sdkUtil = new SDKUtil();
-        int blockHeight = sdkUtil.getBlockHeight();
-        log.info("{}",blockHeight);
+        String a = new String(Helper.hexToBytes("6232356a6147467062673d3d23"),"utf-8");
+////        log.info("{}",a);0f774d321616d223
+//        SDKUtil sdkUtil = new SDKUtil();
+//        int blockHeight = sdkUtil.getBlockHeight();
+//        log.info("{}",blockHeight);
+        log.info("encode:{}",a);
+        String decode = Base64ConvertUtil.decode("b25jaGFpbg==");
+        log.info("decode:{}",decode);
     }
 
     @org.junit.Test
@@ -49,12 +52,12 @@ public class Test {
 
     @org.junit.Test
     public void testBase64() throws Exception {
-        String s = "测试用语";
+        String s = "shanghai";
         String encode = Base64ConvertUtil.encode(s);
         log.info("encode:{}",encode);
-        String hexString = Helper.toHexString(encode.getBytes());
-        log.info("hexString:{}",hexString);
-        String decode = Base64ConvertUtil.decode(encode);
-        log.info("decode:{}",decode);
+//        String hexString = Helper.toHexString(encode.getBytes());
+//        log.info("hexString:{}",hexString);
+//        String decode = Base64ConvertUtil.decode(encode);
+//        log.info("decode:{}",decode);
     }
 }

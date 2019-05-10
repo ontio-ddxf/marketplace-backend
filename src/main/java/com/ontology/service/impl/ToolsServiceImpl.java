@@ -7,8 +7,9 @@ import com.github.pagehelper.PageInfo;
 import com.ontology.entity.Order;
 import com.ontology.exception.OntIdException;
 import com.ontology.mapper.OrderMapper;
-import com.ontology.secure.SecureConfig;
 import com.ontology.service.ToolsService;
+import com.ontology.utils.Base64ConvertUtil;
+import com.ontology.utils.ConfigParam;
 import com.ontology.utils.ErrorInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class ToolsServiceImpl implements ToolsService {
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
-    private SecureConfig secureConfig;
+    private ConfigParam configParam;
 
     @Override
     public PageInfo<Order> queryList(String action, Integer provider, String ontid, int pageNum, int pageSize) {
@@ -59,7 +60,7 @@ public class ToolsServiceImpl implements ToolsService {
         if (StringUtils.isEmpty(order.getRecvMsgTx())) {
             throw new OntIdException(action, ErrorInfo.NO_PERMISSION.descCN(), ErrorInfo.NO_PERMISSION.descEN(), ErrorInfo.NO_PERMISSION.code());
         }
-        String event = order.getSellEvent();
+        String event = order.getRecvMsgEvent();
         if (StringUtils.isEmpty(event)) {
             throw new OntIdException(action, ErrorInfo.NOT_FOUND.descCN(), ErrorInfo.NOT_FOUND.descEN(), ErrorInfo.NOT_FOUND.code());
         }
@@ -68,8 +69,8 @@ public class ToolsServiceImpl implements ToolsService {
         String data = "";
         for (int i = 0;i<notify.size();i++) {
             JSONObject obj = notify.getJSONObject(i);
-            if (secureConfig.getContractHash().equals(obj.getString("ContractAddress"))) {
-                data = obj.getString("States");
+            if (configParam.CONTRACT_HASH.equals(obj.getString("ContractAddress"))) {
+                data = obj.getJSONArray("States").getString(2);
                 try {
                     data = new String(com.github.ontio.common.Helper.hexToBytes(data),"utf-8");
                 } catch (UnsupportedEncodingException e) {
@@ -79,7 +80,15 @@ public class ToolsServiceImpl implements ToolsService {
             }
         }
         String[] dataArray = data.split("#");
-        List<String> dataList = Arrays.asList(dataArray);
+        List<String> dataList = new ArrayList<>();
+        for (String decode : dataArray) {
+            try {
+                decode = Base64ConvertUtil.decode(decode);
+                dataList.add(decode);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
         return dataList;
     }
 
