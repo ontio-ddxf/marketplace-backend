@@ -5,7 +5,7 @@ import com.ontology.entity.Order;
 
 import java.util.List;
 
-public interface ToolsService {
+public interface OrderService {
 
     PageInfo<Order> queryList(String action, Integer provider, String ontid, int pageNum, int pageSize);
 

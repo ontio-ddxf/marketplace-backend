@@ -7,7 +7,7 @@ import com.github.pagehelper.PageInfo;
 import com.ontology.entity.Order;
 import com.ontology.exception.OntIdException;
 import com.ontology.mapper.OrderMapper;
-import com.ontology.service.ToolsService;
+import com.ontology.service.OrderService;
 import com.ontology.utils.Base64ConvertUtil;
 import com.ontology.utils.ConfigParam;
 import com.ontology.utils.ErrorInfo;
@@ -23,7 +23,7 @@ import java.util.*;
 @Slf4j
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class ToolsServiceImpl implements ToolsService {
+public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderMapper orderMapper;
