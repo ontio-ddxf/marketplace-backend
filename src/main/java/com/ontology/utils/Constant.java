@@ -5,6 +5,11 @@ package com.ontology.utils;
  */
 public class Constant {
 
+    public static final String ES_INDEX_DATASET= "dataset_index";
+    public static final String ES_TYPE_DATASET = "dataset";
+    public static final String ES_INDEX_ORDER = "order_index";
+    public static final String ES_TYPE_ORDER = "order";
+
     public static final String HTTPHEADER_LANGUAGE = "Lang";
 
     public static final String HTTPHEADER_AUTHORIZATION = "Authorization";

@@ -26,7 +26,7 @@ public class OnsController {
         String action = "register";
         String ontid = req.getOntid();
         String domain = req.getDomain();
-        Boolean allowance = onsService.findByOntid(action, ontid, domain);
+        Boolean allowance = onsService.registerOns(action, ontid, domain);
 
         return new Result(action, ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.descEN(), allowance);
     }
@@ -36,7 +36,7 @@ public class OnsController {
     public Result login(@PathVariable String ontid) {
         String action = "login";
 
-        String ons = onsService.findOns(action, ontid);
+        String ons = onsService.loginOns(action, ontid);
 
         return new Result(action, ErrorInfo.SUCCESS.code(), ErrorInfo.SUCCESS.descEN(), ons);
     }

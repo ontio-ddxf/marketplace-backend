@@ -153,16 +153,16 @@ public class SecureConfig {
         }
     }
 
-    private static String CONTRACT_HASH;
-    @Value("${contract.hash}")
-    public void setContractHash(String contractHash) {
-        SecureConfig.CONTRACT_HASH = contractHash;
+    private static String PAYER_WIF;
+    @Value("${payer.wif}")
+    public void setPayer(String wif) {
+        SecureConfig.PAYER_WIF = wif;
     }
 
-    public String getContractHash() {
+    public String getPayer() {
         try {
-            return SecureConfig.CONTRACT_HASH;
-        } catch (Exception e) {
+            return Base64ConvertUtil.decode(SecureConfig.PAYER_WIF);
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             logger.error(e.getMessage());
             return null;
