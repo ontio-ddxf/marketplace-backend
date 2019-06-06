@@ -1,5 +1,6 @@
 package com.ontology.service;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.common.Address;
@@ -10,17 +11,18 @@ import com.ontology.mapper.OrderDataMapper;
 import com.ontology.mapper.OrderMapper;
 import com.ontology.utils.ConfigParam;
 import com.ontology.utils.Constant;
+import com.ontology.utils.ElasticsearchUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -32,9 +34,9 @@ public class MarketplaceReceiver {
     @Autowired
     private ConfigParam configParam;
 
-    @KafkaListener(topics = {"topic-ddxf"})
+    @KafkaListener(topics = {"topic-marketplace"},groupId = "group-marketplace")
     public void receiveMessage(ConsumerRecord<?, ?> record, Acknowledgment ack) {
-        log.info("ddxf入库：{}", Thread.currentThread().getName());
+        log.info("marketplace解析：{}", Thread.currentThread().getName());
         try {
             String value = (String) record.value();
             JSONObject event = JSONObject.parseObject(value);
@@ -46,106 +48,76 @@ public class MarketplaceReceiver {
                 if (configParam.CONTRACT_HASH_MP.equals(notify.getString("ContractAddress"))) {
                     // 智能合约地址匹配，解析结果
                     Object statesObj = notify.get("States");
-                    if (statesObj instanceof String) {
-                        // sendEncMessage方法推送的数据；忽略，最后和event一起存
-                        continue;
-                    }
+
                     JSONArray states = (JSONArray) statesObj;
                     String method = new String(Helper.hexToBytes(states.getString(0)), "utf-8");
-                    Order order = new Order();
                     log.info(method);
-                    String txHash = event.getString("TxHash");
-                    if ("sendToken".equals(method)) {
-                        // sendToken推送的事件
-                        String exchangeId = states.getString(1);
-                        String demander = String.format(Constant.ONTID_PREFIX,Address.parse(states.getString(2)).toBase58());
-                        String provider = String.format(Constant.ONTID_PREFIX,Address.parse(states.getString(3)).toBase58());
-                        String tokenAddress = states.getString(4);
-                        JSONArray dataList = states.getJSONArray(5);
-                        JSONArray priceList = states.getJSONArray(6);
-                        String waitSendMsgTime = states.getString(7);
 
-                        order.setOrderId(exchangeId);
-                        order.setState("boughtOnchain");
-                        order.setBuyDate(new Date());
-                        order.setBuyerOntid(demander);
-                        order.setBuyEvent(event.toJSONString());
-                        order.setBuyTx(txHash);
-                        order.setSellerOntid(provider);
-
-                        List<OrderData> ods = new ArrayList<>();
-                        for (int n = 0; n < dataList.size(); n++) {
-                            OrderData od = new OrderData();
-                            od.setId(UUID.randomUUID().toString());
-                            od.setOrderId(order.getOrderId());
-                            od.setDataId(new String(Helper.hexToBytes(dataList.getString(n)),"utf-8"));
-                            ods.add(od);
+                    if ("makeOrder".equals(method)) {
+                        // makeOrder推送的事件
+                        String orderId = states.getString(2);
+                        long tokenId = Long.parseLong(Helper.reverse(states.getString(4)), 16);
+                        long amount = Long.parseLong(Helper.reverse(states.getString(6)), 16);
+                        long price = Long.parseLong(Helper.reverse(states.getString(8)), 16);
+                        JSONArray objects = JSONArray.parseArray(states.getString(10));
+                        List<String> ojList = new ArrayList<>();
+                        for (Object o : objects) {
+                            String oj = String.format(Constant.ONTID_PREFIX,Address.parse((String) o).toBase58());
+                            ojList.add(oj);
                         }
-                        order.setOrderData(ods);
+                        log.info("tokenId:{}",tokenId);
+                        log.info("amount:{}",amount);
+                        log.info("price:{}",price);
+                        log.info("ojList:{}",JSON.toJSONString(ojList));
+                        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+                        MatchQueryBuilder queryToken = QueryBuilders.matchQuery("tokenId", tokenId);
+                        MatchQueryBuilder queryAmount = QueryBuilders.matchQuery("amount", amount);
+                        MatchQueryBuilder queryPrice = QueryBuilders.matchQuery("price", price);
+                        MatchQueryBuilder queryJudger = QueryBuilders.matchQuery("judger", JSON.toJSONString(ojList));
+                        boolQuery.must(queryToken);
+                        boolQuery.must(queryAmount);
+                        boolQuery.must(queryPrice);
+                        boolQuery.must(queryJudger);
+                        List<Map<String, Object>> list = ElasticsearchUtil.searchListData(Constant.ES_INDEX_ORDER, Constant.ES_TYPE_ORDER, boolQuery, null, null, null, null);
+                        Map<String, Object> order = list.get(0);
+                        String id = (String) order.get("id");
+                        order.put("orderId",orderId);
+                        order.put("state","1");
+                        ElasticsearchUtil.updateDataById(order,Constant.ES_INDEX_ORDER, Constant.ES_TYPE_ORDER,id);
+                    } else if ("takeOrder".equals(method)) {
+                        // takeOrder推送的事件
+                        String orderId = states.getString(2);
 
-                    } else if ("sendEncMessage".equals(method)) {
-                        // sendEncMessage推送的事件
-                        String exchangeId = states.getString(1);
-                        String demander = String.format(Constant.ONTID_PREFIX,Address.parse(states.getString(2)).toBase58());
-                        String provider = String.format(Constant.ONTID_PREFIX,Address.parse(states.getString(3)).toBase58());
 
-                        order.setOrderId(exchangeId);
-                        order.setBuyerOntid(demander);
-                        order.setSellerOntid(provider);
-                        order.setState("deliveredOnchain");
-                        order.setSellDate(new Date());
-                        order.setSellEvent(event.toJSONString());
-                        order.setSellTx(txHash);
+                    } else if ("confirm".equals(method)) {
+                        // confirm推送的事件
+                        String orderId = states.getString(2);
 
-                    } else if ("receiveEncMessage".equals(method)) {
-                        // receiveEncMessage推送的事件
-                        String exchangeId = states.getString(1);
+                        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+                        MatchQueryBuilder queryToken = QueryBuilders.matchQuery("orderId", orderId);
+                        boolQuery.must(queryToken);
+                        List<Map<String, Object>> list = ElasticsearchUtil.searchListData(Constant.ES_INDEX_ORDER, Constant.ES_TYPE_ORDER, boolQuery, null, null, null, null);
+                        Map<String, Object> order = list.get(0);
+                        String id = (String) order.get("id");
+                        order.put("state","3");
+                        order.put("confirmTime",JSON.toJSONStringWithDateFormat(new Date(), "yyyy-MM-dd HH:mm:ss").replace("\"", ""));
+                        ElasticsearchUtil.updateDataById(order,Constant.ES_INDEX_ORDER, Constant.ES_TYPE_ORDER,id);
+                    } else if ("applyArbitrage".equals(method)) {
+                        // applyArbitrage推送的事件
+                        String orderId = states.getString(2);
 
-                        order.setOrderId(exchangeId);
-                        order.setState("buyerRecvMsgOnchain");
-                        order.setRecvMsgDate(new Date());
-                        order.setRecvMsgEvent(event.toJSONString());
-                        order.setRecvMsgTx(txHash);
+                        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+                        MatchQueryBuilder queryToken = QueryBuilders.matchQuery("orderId", orderId);
+                        boolQuery.must(queryToken);
+                        List<Map<String, Object>> list = ElasticsearchUtil.searchListData(Constant.ES_INDEX_ORDER, Constant.ES_TYPE_ORDER, boolQuery, null, null, null, null);
+                        Map<String, Object> order = list.get(0);
+                        String id = (String) order.get("id");
+                        order.put("state","4");
+                        ElasticsearchUtil.updateDataById(order,Constant.ES_INDEX_ORDER, Constant.ES_TYPE_ORDER,id);
 
-                    } else if ("receiveToken".equals(method)) {
-                        // receiveToken推送的事件
-                        String exchangeId = states.getString(1);
-//                        String address = states.getString(3);
-//                        log.info(address);
-//                        log.info("event:{}",event);
-//                        String demander = String.format(Constant.ONTID_PREFIX,Address.parse(states.getString(3)).toBase58());
-//                        String provider = String.format(Constant.ONTID_PREFIX,Address.parse(states.getString(4)).toBase58());
+                    } else if ("arbitrage".equals(method)) {
+                        // arbitrage推送的事件
 
-                        order.setOrderId(exchangeId);
-//                        order.setBuyerOntid(demander);
-//                        order.setSellerOntid(provider);
-                        order.setState("sellerRecvTokenOnchain");
-                        order.setRecvTokenDate(new Date());
-                        order.setRecvTokenEvent(event.toJSONString());
-                        order.setRecvTokenTx(txHash);
-
-                    } else if ("cancelExchange".equals(method)) {
-                        // cancelExchange推送的事件
-                        String exchangeId = states.getString(1);
-
-                        order.setOrderId(exchangeId);
-                        order.setState("buyerCancelOnchain");
-                        order.setCancelDate(new Date());
-                        order.setCancelEvent(event.toJSONString());
-                        order.setCancelTx(txHash);
-                    }
-                    // 只根据orderId查询
-                    Order one = orderMapper.selectByPrimaryKey(order.getOrderId());
-                    if (one == null) {
-                        // insert
-                        orderMapper.insertSelective(order);
-                    } else {
-                        // update
-                        orderMapper.updateByPrimaryKeySelective(order);
-                    }
-                    if ("boughtOnchain".equals(order.getState())) {
-                        List<OrderData> orderData = order.getOrderData();
-                        orderDataMapper.insertList(orderData);
                     }
                 }
             }

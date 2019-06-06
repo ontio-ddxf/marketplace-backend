@@ -69,15 +69,15 @@ public class OrderServiceImpl implements OrderService {
         String data = "";
         for (int i = 0;i<notify.size();i++) {
             JSONObject obj = notify.getJSONObject(i);
-            if (configParam.CONTRACT_HASH.equals(obj.getString("ContractAddress"))) {
-                data = obj.getJSONArray("States").getString(2);
-                try {
-                    data = new String(com.github.ontio.common.Helper.hexToBytes(data),"utf-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-                break;
-            }
+//            if (configParam.CONTRACT_HASH.equals(obj.getString("ContractAddress"))) {
+//                data = obj.getJSONArray("States").getString(2);
+//                try {
+//                    data = new String(com.github.ontio.common.Helper.hexToBytes(data),"utf-8");
+//                } catch (UnsupportedEncodingException e) {
+//                    e.printStackTrace();
+//                }
+//                break;
+//            }
         }
         String[] dataArray = data.split("#");
         List<String> dataList = new ArrayList<>();

@@ -16,40 +16,35 @@ Date: 2019-03-21 16:47:15
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
--- Table structure for tbl_order_sync
+-- Table structure for tbl_certifier
 -- ----------------------------
-DROP TABLE IF EXISTS `tbl_order_sync`;
-CREATE TABLE `tbl_order_sync` (
-  `order_id` varchar(255) NOT NULL,
-  `buyer_ontid` varchar(255) DEFAULT NULL,
-  `seller_ontid` varchar(255) DEFAULT NULL,
-  `buy_tx` text,
-  `sell_tx` text,
-  `recv_token_tx` text,
-  `recv_msg_tx` text,
-  `cancel_tx` text,
-  `buy_event` text,
-  `sell_event` text,
-  `recv_token_event` text,
-  `recv_msg_event` text,
-  `cancel_event` text,
-  `buy_date` datetime DEFAULT NULL,
-  `sell_date` datetime DEFAULT NULL,
-  `recv_token_date` datetime DEFAULT NULL,
-  `recv_msg_date` datetime DEFAULT NULL,
-  `cancel_date` datetime DEFAULT NULL,
-  `state` varchar(255) DEFAULT NULL COMMENT 'boughtOnchain;buyerCancelOnchain;deliveredOnchain;sellerRecvTokenOnchain;buyerRecvMsgOnchain',
-  PRIMARY KEY (`order_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
+DROP TABLE IF EXISTS `tbl_certifier`;
+CREATE TABLE `tbl_certifier` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ontid` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Table structure for tbl_order_data_sync
+-- Table structure for tbl_judger
 -- ----------------------------
-DROP TABLE IF EXISTS `tbl_order_data_sync`;
-CREATE TABLE `tbl_order_data_sync` (
-  `id` varchar(255) NOT NULL,
-  `order_id` varchar(255) DEFAULT NULL,
-  `data_id` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+DROP TABLE IF EXISTS `tbl_judger`;
+CREATE TABLE `tbl_judger` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ontid` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Table structure for tbl_ons
+-- ----------------------------
+DROP TABLE IF EXISTS `tbl_ons`;
+CREATE TABLE `tbl_ons` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ontid` varchar(255) DEFAULT NULL,
+  `domain` varchar(255) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `state` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;

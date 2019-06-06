@@ -65,8 +65,10 @@ public class OnsServiceImpl implements OnsService {
             String params = Helper.getParams(ontid, configParam.CONTRACT_HASH_ONS, "registerDomain", argList, configParam.PAYER_ADDRESS);
             try {
                 Object jsonObject = sdkUtil.invokeContract(params, secureConfig.getPayer(), false);
+                log.info("register:{}",jsonObject);
                 return Boolean.TRUE;
             } catch (Exception e) {
+                log.info("error.............{}",e);
                 e.printStackTrace();
             }
         } else {
@@ -78,6 +80,7 @@ public class OnsServiceImpl implements OnsService {
 //                return Boolean.TRUE;
             }
 //        }
+        log.info("already exist");
         return Boolean.FALSE;
     }
 
@@ -85,9 +88,11 @@ public class OnsServiceImpl implements OnsService {
     public String loginOns(String action, String ontid) {
         Ons ons = onsMapper.findByOntid(ontid);
         if (ons == null) {
+            log.info("null");
             return null;
         } else {
             String domain = ons.getDomain();
+            log.info("domain:{}",domain);
             Map<String,Object> arg = new HashMap<>();
             arg.put("name","fulldomain");
             arg.put("value","String:"+domain);
@@ -97,9 +102,11 @@ public class OnsServiceImpl implements OnsService {
             String ownerOntid;
             try {
                 JSONObject jsonObject = (JSONObject) sdkUtil.invokeContract(params, secureConfig.getPayer(), true);
+                log.info("login result:{}",jsonObject);
                 String owner = jsonObject.getString("Result");
                 ownerOntid  = new String(com.github.ontio.common.Helper.hexToBytes(owner));
             } catch (Exception e) {
+                log.info("error.................{}",e);
                 e.printStackTrace();
                 throw new OntIdException(e.getMessage());
             }
