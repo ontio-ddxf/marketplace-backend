@@ -48,7 +48,8 @@ public class DataTokenReceiver {
                     if ("createTokenWithController".equals(method)) {
                         // createTokenWithController推送的事件
                         String dataId = new String(Helper.hexToBytes(states.getString(2)), "utf-8");
-                        long tokenId = Long.parseLong(Helper.reverse(states.getString(4)), 16);
+                        long beginTokenId = Long.parseLong(Helper.reverse(states.getString(4)), 16);
+                        long endTokenId = Long.parseLong(Helper.reverse(states.getString(6)), 16);
                         // 根据dataId查找到data更新tokenId
                         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
                         MatchQueryBuilder queryToken = QueryBuilders.matchQuery("dataId", dataId);
@@ -57,9 +58,18 @@ public class DataTokenReceiver {
                         if (CollectionUtils.isEmpty(dataList)) {
                             return;
                         }
-                        String id = (String) dataList.get(0).get("id");
+                        Map<String, Object> data = dataList.get(0);
+                        String id = (String) data.get("id");
+                        String tokenRange = (String) data.get("tokenRange");
+                        StringBuilder sb = new StringBuilder();
+                        if (com.ontology.utils.Helper.isEmptyOrNull(tokenRange)) {
+                            sb.append(beginTokenId).append(",").append(endTokenId);
+                        } else {
+                            sb.append(tokenRange).append(",").append(beginTokenId).append(",").append(endTokenId);
+                        }
+                        tokenRange = sb.toString();
                         Map<String, Object> addTokenId = new HashMap<>();
-                        addTokenId.put("tokenId",tokenId);
+                        addTokenId.put("tokenRange",tokenRange);
                         ElasticsearchUtil.updateDataById(addTokenId,Constant.ES_INDEX_DATASET, Constant.ES_TYPE_DATASET,id);
                     }
                 }

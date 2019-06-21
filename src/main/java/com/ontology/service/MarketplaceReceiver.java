@@ -57,27 +57,30 @@ public class MarketplaceReceiver {
                         // makeOrder推送的事件
                         String orderId = states.getString(2);
                         long tokenId = Long.parseLong(Helper.reverse(states.getString(4)), 16);
-                        long amount = Long.parseLong(Helper.reverse(states.getString(6)), 16);
-                        long price = Long.parseLong(Helper.reverse(states.getString(8)), 16);
-                        JSONArray objects = JSONArray.parseArray(states.getString(10));
+//                        long amount = Long.parseLong(Helper.reverse(states.getString(6)), 16);
+//                        long price = Long.parseLong(Helper.reverse(states.getString(8)), 16);
+                        long price = Long.parseLong(Helper.reverse(states.getString(6)), 16);
+//                        JSONArray objects = JSONArray.parseArray(states.getString(10));
+                        JSONArray objects = JSONArray.parseArray(states.getString(8));
                         List<String> ojList = new ArrayList<>();
                         for (Object o : objects) {
                             String oj = String.format(Constant.ONTID_PREFIX,Address.parse((String) o).toBase58());
                             ojList.add(oj);
                         }
                         log.info("tokenId:{}",tokenId);
-                        log.info("amount:{}",amount);
                         log.info("price:{}",price);
                         log.info("ojList:{}",JSON.toJSONString(ojList));
                         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
                         MatchQueryBuilder queryToken = QueryBuilders.matchQuery("tokenId", tokenId);
-                        MatchQueryBuilder queryAmount = QueryBuilders.matchQuery("amount", amount);
+//                        MatchQueryBuilder queryAmount = QueryBuilders.matchQuery("amount", amount);
                         MatchQueryBuilder queryPrice = QueryBuilders.matchQuery("price", price);
                         MatchQueryBuilder queryJudger = QueryBuilders.matchQuery("judger", JSON.toJSONString(ojList));
+                        MatchQueryBuilder queryOrderId = QueryBuilders.matchQuery("orderId.keyword", "");
                         boolQuery.must(queryToken);
-                        boolQuery.must(queryAmount);
+//                        boolQuery.must(queryAmount);
                         boolQuery.must(queryPrice);
                         boolQuery.must(queryJudger);
+                        boolQuery.must(queryOrderId);
                         List<Map<String, Object>> list = ElasticsearchUtil.searchListData(Constant.ES_INDEX_ORDER, Constant.ES_TYPE_ORDER, boolQuery, null, null, null, null);
                         Map<String, Object> order = list.get(0);
                         String id = (String) order.get("id");
@@ -94,8 +97,8 @@ public class MarketplaceReceiver {
                         String orderId = states.getString(2);
 
                         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-                        MatchQueryBuilder queryToken = QueryBuilders.matchQuery("orderId", orderId);
-                        boolQuery.must(queryToken);
+                        MatchQueryBuilder queryOrder = QueryBuilders.matchQuery("orderId", orderId);
+                        boolQuery.must(queryOrder);
                         List<Map<String, Object>> list = ElasticsearchUtil.searchListData(Constant.ES_INDEX_ORDER, Constant.ES_TYPE_ORDER, boolQuery, null, null, null, null);
                         Map<String, Object> order = list.get(0);
                         String id = (String) order.get("id");
@@ -107,8 +110,8 @@ public class MarketplaceReceiver {
                         String orderId = states.getString(2);
 
                         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-                        MatchQueryBuilder queryToken = QueryBuilders.matchQuery("orderId", orderId);
-                        boolQuery.must(queryToken);
+                        MatchQueryBuilder queryOrder = QueryBuilders.matchQuery("orderId", orderId);
+                        boolQuery.must(queryOrder);
                         List<Map<String, Object>> list = ElasticsearchUtil.searchListData(Constant.ES_INDEX_ORDER, Constant.ES_TYPE_ORDER, boolQuery, null, null, null, null);
                         Map<String, Object> order = list.get(0);
                         String id = (String) order.get("id");

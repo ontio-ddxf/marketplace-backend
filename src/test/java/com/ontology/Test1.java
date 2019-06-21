@@ -35,6 +35,12 @@ public class Test1 {
     }
 
     @Test
+    public void testDecode() throws Exception {
+        String decode = Base64ConvertUtil.decode("TDRla05hb0ZRUXBUbmlFZzVwTVhpcGRSa2hYcmZjVVd5WlhYRG0zcmR2cjZLVnpYYmhRVg==");
+        log.info("{}",decode);
+    }
+
+    @Test
     public void testHex() throws Exception {
         String s = "0f774d321616d223";
         byte[] bytes = Helper.hexToBytes(s);
@@ -46,7 +52,7 @@ public class Test1 {
 
     @Test
     public void testBase64() throws Exception {
-        String s = "shanghai";
+        String s = "L1fXnoMr52oraW44n6wxLDy6BppcMGS6MuK7soLTpdFZkKHhzb8n";
         String encode = Base64ConvertUtil.encode(s);
         log.info("encode:{}",encode);
     }
