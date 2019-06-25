@@ -51,7 +51,6 @@ public class OnsServiceImpl implements OnsService {
             arg0.put("name","fulldomain");
             arg0.put("value","String:"+domain);
             Map<String,Object> arg1 = new HashMap<>();
-            log.info("ontid:{}",ontid);
             arg1.put("name","registerdid");
             arg1.put("value","String:"+ontid);
             Map<String,Object> arg2 = new HashMap<>();
@@ -67,22 +66,13 @@ public class OnsServiceImpl implements OnsService {
             argList.add(arg3);
             String params = Helper.getParams(ontid, configParam.CONTRACT_HASH_ONS, "registerDomain", argList, configParam.PAYER_ADDRESS);
             try {
-                Object jsonObject = sdkUtil.invokeContract(params, secureConfig.getPayer(), false);
-                log.info("register:{}",jsonObject);
+                sdkUtil.invokeContract(params, secureConfig.getPayer(), false);
                 return Boolean.TRUE;
             } catch (Exception e) {
                 log.info("error.............{}",e);
-                e.printStackTrace();
+                throw new OntIdException(action, ErrorInfo.ALREADY_EXIST.descCN(),ErrorInfo.ALREADY_EXIST.descEN(),ErrorInfo.ALREADY_EXIST.code());
             }
-        } else {
-//            Long allowTime = ons.getUpdateTime().getTime() + (10 * 3600 * 1000);
-//            if (0 == ons.getState() && new Date().after(new Date(allowTime))) {
-//                ons.setUpdateTime(new Date());
-//                ons.setDomain(domain);
-//                onsMapper.updateByPrimaryKeySelective(ons);
-//                return Boolean.TRUE;
-            }
-//        }
+        }
         log.info("already exist");
         return Boolean.FALSE;
     }
@@ -91,7 +81,6 @@ public class OnsServiceImpl implements OnsService {
     public String loginOns(String action, String ontid) {
         Ons ons = onsMapper.findByOntid(ontid);
         if (ons == null) {
-            log.info("null");
             return null;
         } else {
             String domain = ons.getDomain();
@@ -110,11 +99,13 @@ public class OnsServiceImpl implements OnsService {
                 ownerOntid  = new String(com.github.ontio.common.Helper.hexToBytes(owner));
             } catch (Exception e) {
                 log.info("error.................{}",e);
-                e.printStackTrace();
                 throw new OntIdException(e.getMessage());
             }
             if (ontid.equals(ownerOntid)) {
                 return domain;
+            } else if (Helper.isEmptyOrNull(ownerOntid)) {
+                // 未注册成功，删除，重新注册
+                onsMapper.delete(ons);
             }
             return null;
         }
