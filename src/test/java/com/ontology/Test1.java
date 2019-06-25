@@ -1,12 +1,15 @@
 package com.ontology;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.account.Account;
 import com.github.ontio.common.Helper;
 import com.ontology.exception.OntIdException;
-import com.ontology.utils.Base64ConvertUtil;
-import com.ontology.utils.SDKUtil;
+import com.ontology.utils.*;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 
 @Slf4j
@@ -99,5 +103,31 @@ public class Test1 {
         log.info("wif:{}",wif);
         String encode = Base64ConvertUtil.encode(wif);
         log.info("encode:{}",encode);
+    }
+
+    @Test
+    public void match() throws Exception {
+        Matcher matcher = ConstantParam.ONTID_PATTERN.matcher("did:ont:1122413");
+        if (!matcher.find()) {
+            log.info("没找到：{}",matcher);
+        } else {
+            log.info("找到：{}",matcher);
+        }
+    }
+
+    @Test
+    public void search() throws Exception {
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+        MatchQueryBuilder queryToken = QueryBuilders.matchQuery("tokenId", 15);
+        MatchQueryBuilder queryPrice = QueryBuilders.matchQuery("price", 1000000000);
+        MatchQueryBuilder queryJudger = QueryBuilders.matchQuery("judger", JSON.toJSONString("[\"did:ont:AN3H8EAC5AtSkXqG3VbXobyeS9tTbNz4S2\",\"did:ont:AacQn34p97jdtt95ftfJTTfz6wpm9nZ4j4\",\"did:ont:AePd2vTPeb1DggiFj82mR8F4qQXM2H9YpB\",\"did:ont:AQo4CWWmpNZkwvVxmj2mMDeJ2DCMntMVpg\",\"did:ont:AFsPutgDdVujxQe7KBqfK9Jom8AFMGB2x8\"]"));
+        MatchQueryBuilder queryOrderId = QueryBuilders.matchQuery("orderId.keyword", "");
+        boolQuery.must(queryToken);
+        boolQuery.must(queryPrice);
+        boolQuery.must(queryJudger);
+        boolQuery.must(queryOrderId);
+        List<Map<String, Object>> list = ElasticsearchUtil.searchListData(Constant.ES_INDEX_ORDER, Constant.ES_TYPE_ORDER, boolQuery, null, null, null, null);
+//
+        log.info("{}",list.size());
     }
 }

@@ -59,7 +59,7 @@ public class MarketplaceReceiver {
                         long tokenId = Long.parseLong(Helper.reverse(states.getString(4)), 16);
 //                        long amount = Long.parseLong(Helper.reverse(states.getString(6)), 16);
 //                        long price = Long.parseLong(Helper.reverse(states.getString(8)), 16);
-                        long price = Long.parseLong(Helper.reverse(states.getString(6)), 16);
+                        String price = String.valueOf(Long.parseLong(Helper.reverse(states.getString(6)), 16));
 //                        JSONArray objects = JSONArray.parseArray(states.getString(10));
                         JSONArray objects = JSONArray.parseArray(states.getString(8));
                         List<String> ojList = new ArrayList<>();

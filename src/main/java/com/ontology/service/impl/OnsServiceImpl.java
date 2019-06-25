@@ -7,15 +7,14 @@ import com.ontology.exception.OntIdException;
 import com.ontology.mapper.OnsMapper;
 import com.ontology.secure.SecureConfig;
 import com.ontology.service.OnsService;
-import com.ontology.utils.ConfigParam;
-import com.ontology.utils.Helper;
-import com.ontology.utils.SDKUtil;
+import com.ontology.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.regex.Matcher;
 
 
 @Slf4j
@@ -35,6 +34,10 @@ public class OnsServiceImpl implements OnsService {
 
     @Override
     public Boolean registerOns(String action, String ontid, String domain) {
+        Matcher matcher = ConstantParam.ONTID_PATTERN.matcher(ontid);
+        if (!matcher.find()) {
+            throw new OntIdException(action, ErrorInfo.IDENTITY_VERIFY_FAILED.descCN(),ErrorInfo.IDENTITY_VERIFY_FAILED.descEN(),ErrorInfo.IDENTITY_VERIFY_FAILED.code());
+        }
         Ons ons = onsMapper.findByOntid(ontid);
         if (ons == null) {
             ons = new Ons();
