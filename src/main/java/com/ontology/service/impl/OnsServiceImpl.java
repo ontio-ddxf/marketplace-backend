@@ -35,7 +35,8 @@ public class OnsServiceImpl implements OnsService {
     @Override
     public Boolean registerOns(String action, String ontid, String domain) {
         Matcher matcher = ConstantParam.ONTID_PATTERN.matcher(ontid);
-        if (!matcher.find()) {
+        matcher.matches();
+        if (!matcher.matches()) {
             throw new OntIdException(action, ErrorInfo.IDENTITY_VERIFY_FAILED.descCN(),ErrorInfo.IDENTITY_VERIFY_FAILED.descEN(),ErrorInfo.IDENTITY_VERIFY_FAILED.code());
         }
         Ons ons = onsMapper.findByOntid(ontid);
