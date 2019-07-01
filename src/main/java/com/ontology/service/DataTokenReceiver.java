@@ -76,7 +76,7 @@ public class DataTokenReceiver {
             }
             ack.acknowledge();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("catch exception:",e);
         }
     }
 }

@@ -126,7 +126,7 @@ public class MarketplaceReceiver {
             }
             ack.acknowledge();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("catch exception:",e);
         }
     }
 }

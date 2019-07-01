@@ -86,7 +86,7 @@ public class OrderServiceImpl implements OrderService {
                 decode = Base64ConvertUtil.decode(decode);
                 dataList.add(decode);
             } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+                log.error("catch exception:",e);
             }
         }
         return dataList;

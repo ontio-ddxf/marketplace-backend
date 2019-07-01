@@ -70,7 +70,7 @@ public class OnsServiceImpl implements OnsService {
                 sdkUtil.invokeContract(params, secureConfig.getPayer(), false);
                 return Boolean.TRUE;
             } catch (Exception e) {
-                log.info("error.............{}",e);
+                log.error("catch exception:",e);
                 throw new OntIdException(action, ErrorInfo.ALREADY_EXIST.descCN(),ErrorInfo.ALREADY_EXIST.descEN(),ErrorInfo.ALREADY_EXIST.code());
             }
         }
@@ -99,7 +99,7 @@ public class OnsServiceImpl implements OnsService {
                 String owner = jsonObject.getString("Result");
                 ownerOntid  = new String(com.github.ontio.common.Helper.hexToBytes(owner));
             } catch (Exception e) {
-                log.info("error.................{}",e);
+                log.error("catch exception:",e);
                 throw new OntIdException(e.getMessage());
             }
             if (ontid.equals(ownerOntid)) {
