@@ -57,10 +57,7 @@ public class MarketplaceReceiver {
                         // makeOrder推送的事件
                         String orderId = states.getString(2);
                         long tokenId = Long.parseLong(Helper.reverse(states.getString(4)), 16);
-//                        long amount = Long.parseLong(Helper.reverse(states.getString(6)), 16);
-//                        long price = Long.parseLong(Helper.reverse(states.getString(8)), 16);
                         String price = String.valueOf(Long.parseLong(Helper.reverse(states.getString(6)), 16));
-//                        JSONArray objects = JSONArray.parseArray(states.getString(10));
                         JSONArray objects = JSONArray.parseArray(states.getString(8));
                         List<String> ojList = new ArrayList<>();
                         for (Object o : objects) {
@@ -76,11 +73,12 @@ public class MarketplaceReceiver {
                         MatchQueryBuilder queryPrice = QueryBuilders.matchQuery("price", price);
                         MatchQueryBuilder queryJudger = QueryBuilders.matchQuery("judger", JSON.toJSONString(ojList));
                         MatchQueryBuilder queryOrderId = QueryBuilders.matchQuery("orderId.keyword", "");
+                        MatchQueryBuilder queryAuthId = QueryBuilders.matchQuery("authId.keyword", "");
                         boolQuery.must(queryToken);
-//                        boolQuery.must(queryAmount);
                         boolQuery.must(queryPrice);
                         boolQuery.must(queryJudger);
                         boolQuery.must(queryOrderId);
+                        boolQuery.must(queryAuthId);
                         List<Map<String, Object>> list = ElasticsearchUtil.searchListData(Constant.ES_INDEX_ORDER, Constant.ES_TYPE_ORDER, boolQuery, null, null, null, null);
                         Map<String, Object> order = list.get(0);
                         String id = (String) order.get("id");
@@ -89,9 +87,7 @@ public class MarketplaceReceiver {
                         ElasticsearchUtil.updateDataById(order,Constant.ES_INDEX_ORDER, Constant.ES_TYPE_ORDER,id);
                     } else if ("takeOrder".equals(method)) {
                         // takeOrder推送的事件
-                        String orderId = states.getString(2);
-
-
+//                        String orderId = states.getString(2);
                     } else if ("confirm".equals(method)) {
                         // confirm推送的事件
                         String orderId = states.getString(2);
