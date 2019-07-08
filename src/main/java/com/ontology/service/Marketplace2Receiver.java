@@ -31,9 +31,9 @@ public class Marketplace2Receiver {
     @Autowired
     private ConfigParam configParam;
 
-    @KafkaListener(topics = {"topic-marketplace"},groupId = "group-marketplace")
+    @KafkaListener(topics = {"topic-marketplace-auth"},groupId = "group-marketplace-auth")
     public void receiveMessage(ConsumerRecord<?, ?> record, Acknowledgment ack) {
-        log.info("marketplace解析：{}", Thread.currentThread().getName());
+        log.info("marketplace-auth解析：{}", Thread.currentThread().getName());
         try {
             String value = (String) record.value();
             JSONObject event = JSONObject.parseObject(value);
