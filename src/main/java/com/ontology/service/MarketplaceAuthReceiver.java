@@ -20,14 +20,11 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 @Slf4j
-public class Marketplace2Receiver {
+public class MarketplaceAuthReceiver {
     @Autowired
     private ConfigParam configParam;
 
@@ -42,7 +39,7 @@ public class Marketplace2Receiver {
 
             for (int k = 0; k < notifys.size(); k++) {
                 JSONObject notify = notifys.getJSONObject(k);
-                if (configParam.CONTRACT_HASH_MP.equals(notify.getString("ContractAddress"))) {
+                if (configParam.CONTRACT_HASH_MP_AUTH.equals(notify.getString("ContractAddress"))) {
                     // 智能合约地址匹配，解析结果
                     Object statesObj = notify.get("States");
 
@@ -60,12 +57,12 @@ public class Marketplace2Receiver {
                         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
                         MatchQueryBuilder querydata = QueryBuilders.matchQuery("dataId", dataId);
                         boolQuery.must(querydata);
-                        List<Map<String, Object>> list = ElasticsearchUtil.searchListData(Constant.ES_INDEX_DATASET, Constant.ES_INDEX_DATASET, boolQuery, null, null, null, null);
+                        List<Map<String, Object>> list = ElasticsearchUtil.searchListData(Constant.ES_INDEX_DATASET, Constant.ES_TYPE_DATASET, boolQuery, null, null, null, null);
                         Map<String, Object> order = list.get(0);
                         String id = (String) order.get("id");
                         order.put("authId",authId);
                         order.put("state","2");
-                        ElasticsearchUtil.updateDataById(order,Constant.ES_INDEX_DATASET, Constant.ES_INDEX_DATASET,id);
+                        ElasticsearchUtil.updateDataById(order,Constant.ES_INDEX_DATASET, Constant.ES_TYPE_DATASET,id);
                     } else if ("takeOrder".equals(method)) {
                         // takeOrder推送的事件，同时解析mintToken
                         String demanderAddress=null;
@@ -88,16 +85,19 @@ public class Marketplace2Receiver {
                             }
                         }
                         String orderId = states.getString(2);
-                        String authId = new String(Helper.hexToBytes(states.getString(4)));
+                        String authId = states.getString(4);
+//                        String judger = String.format(Constant.ONTID_PREFIX, Address.parse(states.getString(6)).toBase58());
 
                         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
                         MatchQueryBuilder queryAuthId = QueryBuilders.matchQuery("authId", authId);
                         MatchQueryBuilder queryAddr = QueryBuilders.matchQuery("demanderAddress", demanderAddress);
                         MatchQueryBuilder queryDataId = QueryBuilders.matchQuery("dataId", dataId);
+//                        MatchQueryBuilder queryJudger = QueryBuilders.matchQuery("judger", judger);
                         MatchQueryBuilder queryOrderId = QueryBuilders.matchQuery("orderId.keyword", "");
                         boolQuery.must(queryAuthId);
                         boolQuery.must(queryAddr);
                         boolQuery.must(queryDataId);
+//                        boolQuery.must(queryJudger);
                         boolQuery.must(queryOrderId);
                         List<Map<String, Object>> list = ElasticsearchUtil.searchListData(Constant.ES_INDEX_ORDER, Constant.ES_TYPE_ORDER, boolQuery, null, null, null, null);
                         Map<String, Object> order = list.get(0);
