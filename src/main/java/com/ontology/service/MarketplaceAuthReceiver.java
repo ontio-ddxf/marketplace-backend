@@ -136,6 +136,17 @@ public class MarketplaceAuthReceiver {
                     } else if ("arbitrage".equals(method)) {
                         // arbitrage推送的事件
 
+                    } else if ("cancelAuth".equals(method)) {
+                        // cancelAuth推送的事件
+                        String authId = states.getString(2);
+                        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+                        MatchQueryBuilder queryAuthId = QueryBuilders.matchQuery("authId", authId);
+                        boolQuery.must(queryAuthId);
+                        List<Map<String, Object>> list = ElasticsearchUtil.searchListData(Constant.ES_INDEX_DATASET, Constant.ES_TYPE_DATASET, boolQuery, null, null, null, null);
+                        Map<String, Object> order = list.get(0);
+                        String id = (String) order.get("id");
+                        order.put("state","3");
+                        ElasticsearchUtil.updateDataById(order,Constant.ES_INDEX_DATASET, Constant.ES_TYPE_DATASET,id);
                     }
                 }
             }
