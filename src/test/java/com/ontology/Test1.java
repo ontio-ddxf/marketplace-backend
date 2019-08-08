@@ -56,7 +56,7 @@ public class Test1 {
 
     @Test
     public void testBase64() throws Exception {
-        String s = "L1fXnoMr52oraW44n6wxLDy6BppcMGS6MuK7soLTpdFZkKHhzb8n";
+        String s = "L4ekNaoFQQpTniEg5pMXipdRkhXrfcUWyZXXDm3rdvr6KVzXbhQV";
         String encode = Base64ConvertUtil.encode(s);
         log.info("encode:{}",encode);
     }
