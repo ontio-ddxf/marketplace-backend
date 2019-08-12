@@ -33,8 +33,8 @@ method：GET
 ```json
 {
 	"action": "queryList",
-	"code": 0,
-	"msg": "SUCCESS",
+	"error": 0,
+	"desc": "SUCCESS",
 	"result": {
 		"total": 6,
 		"list": [{
@@ -84,8 +84,8 @@ method：GET
 |:----------:|:------:|:-----------------------------:|
 |   action   | String |           动作标志            |
 |  version   | String |            版本号             |
-|   code     |  int   |            错误码             |
-|    msg    | String | 成功为SUCCESS，失败为错误描述 |
+|   error     |  int   |            错误码             |
+|    desc    | String | 成功为SUCCESS，失败为错误描述 |
 |   result   | String | 成功返回订单列表分页信息，失败返回"" |
 
 
@@ -112,8 +112,8 @@ method：GET
 ```json
 {
 	"action": "getData",
-	"code": 0,
-	"msg": "SUCCESS",
+	"error": 0,
+	"desc": "SUCCESS",
 	"result": [
 		"data"
 	],
@@ -125,6 +125,6 @@ method：GET
 |:----------:|:------:|:-----------------------------:|
 |   action   | String |           动作标志            |
 |  version   | String |            版本号             |
-|   code     |  int   |            错误码             |
-|    msg    | String | 成功为SUCCESS，失败为错误描述 |
+|   error     |  int   |            错误码             |
+|    desc    | String | 成功为SUCCESS，失败为错误描述 |
 |   result   | String | 成功返回订单号对应的数据信息，失败返回"" |

@@ -5,18 +5,18 @@ import lombok.Data;
 @Data
 public class Result {
     public String action;
-    public int code;
-    public String msg;
+    public int error;
+    public String desc;
     public Object result;
     public String version;
 
     public Result() {
     }
 
-    public Result(String action, int code, String msg, Object result) {
+    public Result(String action, int error, String desc, Object result) {
         this.action = action;
-        this.code = code;
-        this.msg = msg;
+        this.error = error;
+        this.desc = desc;
         this.result = result;
         this.version = "v1";
     }
