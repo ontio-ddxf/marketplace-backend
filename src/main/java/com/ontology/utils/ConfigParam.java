@@ -13,11 +13,11 @@ public class ConfigParam {
 	@Value("${service.restfulUrl}")
 	public String RESTFUL_URL;
 
-	@Value("${payer.addr}")
-	public String PAYER_ADDRESS;
-
-	@Value("${contract.hash.ons}")
-	public String CONTRACT_HASH_ONS;
+	/**
+	 *  合约hash
+	 */
+	@Value("${contract.hash.sourcing}")
+	public String CONTRACT_HASH_SOURCING;
 
 	@Value("${contract.hash.dtoken}")
 	public String CONTRACT_HASH_DTOKEN;

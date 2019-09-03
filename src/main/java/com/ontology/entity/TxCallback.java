@@ -5,26 +5,16 @@ import lombok.Data;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import java.util.Date;
-import java.util.List;
 
-@Table(name = "tbl_ons")
 @Data
-public class Ons {
+@Table(name = "tbl_tx_callback")
+public class TxCallback {
     @Id
     @GeneratedValue(generator = "JDBC")
-    private Integer id;
+    private String txHash;
 
-    private String ontid;
-
-    private String domain;
+    private String callback;
 
     private Date createTime;
-
-    private Date updateTime;
-
-    private Integer state;
-
-
 }

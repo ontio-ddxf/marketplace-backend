@@ -5,10 +5,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.ontio.common.Address;
 import com.github.ontio.common.Helper;
-import com.ontology.entity.Order;
-import com.ontology.entity.OrderData;
-import com.ontology.mapper.OrderDataMapper;
-import com.ontology.mapper.OrderMapper;
 import com.ontology.utils.ConfigParam;
 import com.ontology.utils.Constant;
 import com.ontology.utils.ElasticsearchUtil;
@@ -27,10 +23,6 @@ import java.util.*;
 @Component
 @Slf4j
 public class MarketplaceReceiver {
-    @Autowired
-    private OrderMapper orderMapper;
-    @Autowired
-    private OrderDataMapper orderDataMapper;
     @Autowired
     private ConfigParam configParam;
 

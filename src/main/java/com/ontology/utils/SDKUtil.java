@@ -32,38 +32,6 @@ public class SDKUtil {
     @Autowired
     SecureConfig secureConfig;
 
-
-    public Map<String, String> createOntId(String pwd) throws Exception {
-        OntSdk ontSdk = getOntSdk();
-        Account payerAcct = getPayerAcct();
-        HashMap<String, String> res = new HashMap<>();
-        Identity identity = ontSdk.getWalletMgr().createIdentity(pwd);
-        String txhash = ontSdk.nativevm().ontId().sendRegister(identity,pwd,payerAcct,Constant.GAS_Limit, Constant.GAS_PRICE);
-        ontSdk.getWalletMgr().getWallet().clearIdentity();
-        ontSdk.getWalletMgr().writeWallet();
-        Map keystore = WalletQR.exportIdentityQRCode(ontSdk.getWalletMgr().getWallet(), identity);
-        keystore.put("publicKey",identity.controls.get(0).publicKey);
-        res.put("ontid", identity.ontid);
-        res.put("keystore", JSON.toJSONString(keystore));
-        res.put("tx", txhash);
-        ontSdk.getWalletMgr().getWallet().clearIdentity();
-        return res;
-    }
-
-    public String createOntIdWithWif(String wif, String pwd) throws Exception {
-        OntSdk ontSdk = getOntSdk();
-        byte[] bytes = com.github.ontio.account.Account.getPrivateKeyFromWIF(wif);
-        Identity identity = ontSdk.getWalletMgr().createIdentityFromPriKey(pwd, Helper.toHexString(bytes));
-        Map keystore = WalletQR.exportIdentityQRCode(ontSdk.getWalletMgr().getWallet(), identity);
-        ontSdk.getWalletMgr().getWallet().clearIdentity();
-        return JSON.toJSONString(keystore);
-    }
-
-    public String checkOntId(String keystore, String pwd) throws Exception {
-        Account account = exportAccount(keystore, pwd);
-        return Common.didont + Address.addressFromPubKey(account.serializePublicKey()).toBase58();
-    }
-
     private Account exportAccount(String keystoreBefore, String pwd) throws Exception {
         OntSdk ontSdk = getOntSdk();
         String keystore = keystoreBefore.replace("\\", "");
@@ -163,12 +131,6 @@ public class SDKUtil {
             result = ontSdk.getConnect().sendRawTransaction(txs1[0].toHexString());
         }
         return txs1[0].hash().toString();
-    }
-
-    public Account getPayerAcct() throws Exception {
-        OntSdk ontSdk = getOntSdk();
-        Account account = new Account(Helper.hexToBytes(secureConfig.getWalletJavaPrivateKey()), ontSdk.getWalletMgr().getSignatureScheme());
-        return account;
     }
 
     public Object checkEvent(String txHash) throws Exception {

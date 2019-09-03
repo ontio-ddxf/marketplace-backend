@@ -87,37 +87,6 @@ public class SecureConfig {
 
     private static String WALLET_GO_PUBLIC_KEY;
 
-    @Value("${wallet.goPublicKey}")
-    public void setWalletGoPublicKey(String publicKey) {
-        SecureConfig.WALLET_GO_PUBLIC_KEY = publicKey;
-    }
-
-    public String getWalletGoPublicKey() {
-        try {
-            return Base64ConvertUtil.decode(SecureConfig.WALLET_GO_PUBLIC_KEY);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            logger.error(e.getMessage());
-            return null;
-        }
-    }
-
-    private static String WALLET_JAVA_PRIVATE_KEY;
-
-    @Value("${wallet.javaPrivateKey}")
-    public void setWalletJavaPrivateKey(String privateKey) {
-        SecureConfig.WALLET_JAVA_PRIVATE_KEY = privateKey;
-    }
-
-    public String getWalletJavaPrivateKey() {
-        try {
-            return Base64ConvertUtil.decode(SecureConfig.WALLET_JAVA_PRIVATE_KEY);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            logger.error(e.getMessage());
-            return null;
-        }
-    }
 
     private static String AES_IV;
 
@@ -136,36 +105,4 @@ public class SecureConfig {
         }
     }
 
-    private static String AES_KEY;
-
-    @Value("${aes.key}")
-    public void setAesKey(String key) {
-        SecureConfig.AES_KEY = key;
-    }
-
-    public String getAesKey() {
-        try {
-            return Base64ConvertUtil.decode(SecureConfig.AES_KEY);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            logger.error(e.getMessage());
-            return null;
-        }
-    }
-
-    private static String PAYER_WIF;
-    @Value("${payer.wif}")
-    public void setPayer(String wif) {
-        SecureConfig.PAYER_WIF = wif;
-    }
-
-    public String getPayer() {
-        try {
-            return Base64ConvertUtil.decode(SecureConfig.PAYER_WIF);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            logger.error(e.getMessage());
-            return null;
-        }
-    }
 }
