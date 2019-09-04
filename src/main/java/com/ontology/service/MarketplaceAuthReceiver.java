@@ -38,7 +38,7 @@ public class MarketplaceAuthReceiver {
 
             for (int k = 0; k < notifys.size(); k++) {
                 JSONObject notify = notifys.getJSONObject(k);
-                if (configParam.CONTRACT_HASH_MP_AUTH.equals(notify.getString("ContractAddress"))) {
+                if (configParam.CONTRACT_HASH_MP.equals(notify.getString("ContractAddress"))) {
                     // 智能合约地址匹配，解析结果
                     Object statesObj = notify.get("States");
 

@@ -22,6 +22,8 @@ public class ProducerServiceImpl implements ProducerService {
     public void parseAndSendOne(String value) {
         JSONObject data = JSONObject.parseObject(value);
         JSONObject events = JSONObject.parseObject(data.getString("events"));
+        Integer height = data.getInteger("height");
+        events.put("height",height);
         if (Helper.isEmptyOrNull(events)) {
             return;
         }

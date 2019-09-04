@@ -30,6 +30,7 @@ public class SourcingReceiver {
             JSONObject event = JSONObject.parseObject(value);
 
             JSONArray notifys = event.getJSONArray("Notify");
+            Integer height = event.getInteger("height");
             String txHash = event.getString("TxHash");
 
             for (int k = 0; k < notifys.size(); k++) {
@@ -50,8 +51,9 @@ public class SourcingReceiver {
                         HashMap<String, Object> map = JSONObject.parseObject(valueStr, HashMap.class);
                         map.put("key", key);
                         map.put("txHash", txHash);
-                        map.put("valueStr", valueStr);
-                        ElasticsearchUtil.addData(map, Constant.ES_INDEX_SOURCE, Constant.ES_INDEX_SOURCE);
+                        map.put("height", height);
+                        map.put("value", valueStr);
+                        ElasticsearchUtil.addData(map, Constant.ES_INDEX_SOURCE, Constant.ES_TYPE_SOURCE);
 
                     }
                 }
