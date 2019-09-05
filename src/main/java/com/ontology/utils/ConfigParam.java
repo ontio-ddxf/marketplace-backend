@@ -22,10 +22,18 @@ public class ConfigParam {
 	@Value("${contract.hash.dtoken}")
 	public String CONTRACT_HASH_DTOKEN;
 
+	@Value("${contract.hash.datatoken}")
+	public String CONTRACT_HASH_DATATOKEN;
+
 	@Value("${contract.hash.mp}")
 	public String CONTRACT_HASH_MP;
 
 	@Value("${contract.hash.mp.auth}")
 	public String CONTRACT_HASH_MP_AUTH;
 
+	@Value("${contract.hash.sourcing}")
+	public String CONTRACT_HASH_SOURCING;
+
+	@Value("${contract.hash.medata}")
+	public String CONTRACT_HASH_MEDATA;
 }

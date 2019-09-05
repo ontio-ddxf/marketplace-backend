@@ -159,4 +159,15 @@ public class Constant {
     public static final String TEST_ONTID_NET = "http://139.219.136.188:10330";
 
     public static final String ONTID_PREFIX = "did:ont:%s";
+
+    public static final String KAFKA_TOPIC_EVENT = "topic-test-event";
+    public static final String KAFKA_TOPIC_MEDATA = "topic-medata-event";
+    public static final String KAFKA_TOPIC_SOURCING = "topic-sourcing-event";
+
+    public static final String KAFKA_GROUP_EVENT = "group-block-event";
+    public static final String KAFKA_GROUP_MEDATA = "group-medata-event";
+    public static final String KAFKA_GROUP_SOURCING = "group-sourcing-event";
+
+    public static final String ES_INDEX_SOURCE = "ont_sourcing";
+    public static final String ES_TYPE_SOURCE = "sourcing";
 }
