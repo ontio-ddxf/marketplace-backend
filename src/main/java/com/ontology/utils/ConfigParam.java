@@ -22,7 +22,7 @@ public class ConfigParam {
 	@Value("${contract.hash.dtoken}")
 	public String CONTRACT_HASH_DTOKEN;
 
-	@Value("${contract.hash.mp}")
-	public String CONTRACT_HASH_MP;
+	@Value("${contract.hash.medata}")
+	public String CONTRACT_HASH_MEDATA;
 
 }
