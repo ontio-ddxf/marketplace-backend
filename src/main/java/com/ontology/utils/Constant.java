@@ -16,11 +16,11 @@ public class Constant {
     /**
      * KAFKA topic
      */
-    public static final String KAFKA_TOPIC_EVENT = "topic-block-event";
+    public static final String KAFKA_TOPIC_EVENT = "topic-test-event";
 
     public static final String KAFKA_TOPIC_SOURCING = "topic-sourcing-event";
 
-    public static final String KAFKA_TOPIC_MP = "topic-marketplace-event";
+    public static final String KAFKA_TOPIC_MP = "topic-medata-event";
 
     /**
      * KAFKA group

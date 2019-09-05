@@ -20,7 +20,7 @@ import java.util.*;
 
 @Component
 @Slf4j
-public class MarketplaceAuthReceiver {
+public class MedataReceiver {
     @Autowired
     private ConfigParam configParam;
     @Autowired
