@@ -28,7 +28,7 @@ public class MedataReceiver {
 
     @KafkaListener(topics = {Constant.KAFKA_TOPIC_MEDATA},groupId = Constant.KAFKA_GROUP_MEDATA)
     public void receiveMessage(ConsumerRecord<?, ?> record, Acknowledgment ack) {
-        log.info("marketplace-auth解析：{}", Thread.currentThread().getName());
+        log.info("medata解析：{}", Thread.currentThread().getName());
         try {
             String value = (String) record.value();
             JSONObject event = JSONObject.parseObject(value);
