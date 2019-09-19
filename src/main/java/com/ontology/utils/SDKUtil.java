@@ -5,19 +5,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.util.Base64;
 import com.github.ontio.OntSdk;
 import com.github.ontio.account.Account;
-import com.github.ontio.common.*;
 import com.github.ontio.common.Helper;
 import com.github.ontio.core.transaction.Transaction;
 import com.github.ontio.sdk.exception.SDKException;
-import com.github.ontio.sdk.wallet.Identity;
 import com.ontology.secure.ECIES;
 
-import com.ontology.secure.SecureConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * SDK 入口类
@@ -29,8 +23,6 @@ public class SDKUtil {
 
     @Autowired
     ConfigParam param;
-    @Autowired
-    SecureConfig secureConfig;
 
     private Account exportAccount(String keystoreBefore, String pwd) throws Exception {
         OntSdk ontSdk = getOntSdk();

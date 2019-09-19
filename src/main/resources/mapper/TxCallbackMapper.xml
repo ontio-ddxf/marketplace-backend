@@ -2,8 +2,41 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ontology.mapper.TxCallbackMapper">
   <resultMap id="BaseResultMap" type="com.ontology.entity.TxCallback">
-    <id column="tx_hash" jdbcType="VARCHAR" property="txHash" />
-    <result column="callback" jdbcType="VARCHAR" property="callback" />
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="tx_hash" jdbcType="VARCHAR" property="txHash" />
+    <result column="source_hash" jdbcType="VARCHAR" property="sourceHash" />
+    <result column="callback_url" jdbcType="VARCHAR" property="callbackUrl" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="business_type" jdbcType="VARCHAR" property="businessType" />
+    <result column="business_id" jdbcType="VARCHAR" property="businessId" />
+    <result column="tx_onchain_state" jdbcType="INTEGER" property="txOnchainState" />
+    <result column="source_onchain_state" jdbcType="INTEGER" property="sourceOnchainState" />
+    <result column="callback_state" jdbcType="INTEGER" property="callbackState" />
   </resultMap>
+
+  <sql id="Base_Column_List">
+    id,
+    tx_hash,
+    source_hash,
+    callback_url,
+    create_time,
+    business_type,
+    business_id,
+    tx_onchain_state,
+    source_onchain_state,
+    callback_state
+  </sql>
+
+  <select id="selectNeedCallback" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM
+    tbl_tx_callback
+    WHERE
+    callback_state IS NULL
+    AND (
+    ( source_onchain_state IS NOT NULL AND ( tx_onchain_state IS NOT NULL OR tx_hash IS NULL OR tx_hash = '' ) )
+    OR ( tx_onchain_state IS NOT NULL AND ( source_onchain_state IS NOT NULL OR source_hash IS NULL OR source_hash = '' ) )
+    );
+  </select>
 </mapper>

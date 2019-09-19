@@ -9,6 +9,7 @@ import com.ontology.entity.TxCallback;
 import com.ontology.mapper.TxCallbackMapper;
 import com.ontology.utils.ConfigParam;
 import com.ontology.utils.Constant;
+import com.ontology.utils.HttpClientUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ public class MedataReceiver {
     private ConfigParam configParam;
     @Autowired
     private TxCallbackMapper txCallbackMapper;
+    @Autowired
+    private HttpClientUtils httpClientUtils;
 
     @KafkaListener(topics = {Constant.KAFKA_TOPIC_MP},groupId = Constant.KAFKA_GROUP_MP)
     public void receiveMessage(ConsumerRecord<?, ?> record, Acknowledgment ack) {
@@ -35,6 +38,15 @@ public class MedataReceiver {
 
             JSONArray notifys = event.getJSONArray("Notify");
             String txHash = event.getString("TxHash");
+            Integer state = event.getInteger("State");
+
+            // 保存交易状态
+            TxCallback txCallback = new TxCallback();
+            txCallback.setTxHash(txHash);
+            txCallback = txCallbackMapper.selectOne(txCallback);
+            if (txCallback != null) {
+                txCallback.setTxOnchainState(state);
+            }
 
             for (int k = 0; k < notifys.size(); k++) {
                 JSONObject notify = notifys.getJSONObject(k);
@@ -53,14 +65,10 @@ public class MedataReceiver {
                         log.info("authId:{}",authId);
                         log.info("dataId:{}",dataId);
 
-                        TxCallback txCallback = txCallbackMapper.selectByPrimaryKey(txHash);
-                        String callback = txCallback.getCallback();
-
-                        Map<String,Object> params = new HashMap<>();
-                        params.put("txHash",txHash);
-                        params.put("authId",authId);
-
-                        com.ontology.utils.Helper.sendPost(callback,JSON.toJSONString(params));
+                        // 保存authId
+                        if (txCallback != null) {
+                            txCallback.setBusinessId(authId);
+                        }
 
                     } else if ("takeOrder".equals(method)) {
                         // takeOrder推送的事件，同时解析mintToken
@@ -86,15 +94,11 @@ public class MedataReceiver {
                         String orderId = states.getString(2);
                         String authId = states.getString(4);
 
-                        TxCallback txCallback = txCallbackMapper.selectByPrimaryKey(txHash);
-                        String callback = txCallback.getCallback();
+                        // 保存orderId
+                        if (txCallback != null) {
+                            txCallback.setBusinessId(orderId);
+                        }
 
-                        Map<String,Object> params = new HashMap<>();
-                        params.put("txHash",txHash);
-                        params.put("orderId",orderId);
-                        params.put("tokenId",tokenId);
-
-                        com.ontology.utils.Helper.sendPost(callback,JSON.toJSONString(params));
 
                     } else if ("confirm".equals(method)) {
                         // confirm推送的事件
@@ -112,6 +116,11 @@ public class MedataReceiver {
                     }
                 }
             }
+
+            if (txCallback != null) {
+                txCallbackMapper.updateByPrimaryKeySelective(txCallback);
+            }
+
             ack.acknowledge();
         } catch (Exception e) {
             log.error("catch exception:",e);

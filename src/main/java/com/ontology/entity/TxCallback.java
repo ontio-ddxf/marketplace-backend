@@ -12,9 +12,23 @@ import java.util.Date;
 public class TxCallback {
     @Id
     @GeneratedValue(generator = "JDBC")
+    private Integer id;
+
     private String txHash;
 
-    private String callback;
+    private String sourceHash;
+
+    private String callbackUrl;
 
     private Date createTime;
+
+    private String businessType;
+
+    private String businessId;
+
+    private Integer txOnchainState;
+
+    private Integer sourceOnchainState;
+
+    private Integer callbackState;
 }
