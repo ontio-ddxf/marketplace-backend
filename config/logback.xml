@@ -46,7 +46,7 @@
         <appender-ref ref="STDOUT"/>
     </root>
 
-    <logger name="com.ontology.mapper" level="DEBUG" additivity="false">
+    <logger name="dao" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </logger>

@@ -96,6 +96,7 @@ public class MedataReceiver {
 
                         // 保存orderId
                         if (txCallback != null) {
+//                            txCallback.setBusinessId(orderId+","+tokenId);
                             txCallback.setBusinessId(orderId);
                         }
 

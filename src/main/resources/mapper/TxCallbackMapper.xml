@@ -34,6 +34,7 @@
     tbl_tx_callback
     WHERE
     callback_state IS NULL
+    AND callback_url <![CDATA[ <> ]]> ''
     AND (
     ( source_onchain_state IS NOT NULL AND ( tx_onchain_state IS NOT NULL OR tx_hash IS NULL OR tx_hash = '' ) )
     OR ( tx_onchain_state IS NOT NULL AND ( source_onchain_state IS NOT NULL OR source_hash IS NULL OR source_hash = '' ) )

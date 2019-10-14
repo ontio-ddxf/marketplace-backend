@@ -68,6 +68,7 @@ public class SourcingReceiver {
                         txCallback.setSourceHash(sourceHash);
                         txCallback = txCallbackMapper.selectOne(txCallback);
                         if (txCallback != null) {
+                            log.info("source txCallback:{}",txCallback);
                             txCallback.setSourceOnchainState(state);
                             txCallbackMapper.updateByPrimaryKeySelective(txCallback);
                         }

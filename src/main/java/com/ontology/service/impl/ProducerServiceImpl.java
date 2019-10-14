@@ -60,6 +60,7 @@ public class ProducerServiceImpl implements ProducerService {
             txCallback.setTxHash(txHash);
             txCallback = txCallbackMapper.selectOne(txCallback);
             if (txCallback != null) {
+                log.info("common txCallback:{}",txCallback);
                 txCallback.setTxOnchainState(state);
                 txCallbackMapper.updateByPrimaryKeySelective(txCallback);
             }

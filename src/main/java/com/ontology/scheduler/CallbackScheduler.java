@@ -27,13 +27,14 @@ public class CallbackScheduler extends BaseScheduler {
 
     private static final String authType = "authId";
     private static final String orderType = "orderId";
+    private static final String tokenId = "tokenId";
     @Autowired
     private TxCallbackMapper txCallbackMapper;
     @Autowired
     private HttpClientUtils httpClientUtils;
 
 
-    @Scheduled(initialDelay = 5 * 1000, fixedDelay = 5 * 1000)
+//    @Scheduled(initialDelay = 6 * 1000, fixedDelay = 6 * 1000)
     private void callbackTxState() {
         log.info("callbackTxState begin...");
         List<TxCallback> txCallbacks = txCallbackMapper.selectNeedCallback();
@@ -59,6 +60,10 @@ public class CallbackScheduler extends BaseScheduler {
                 if (authType.equals(txCallback.getBusinessType())) {
                     params.put(authType, txCallback.getBusinessId());
                 } else if (orderType.equals(txCallback.getBusinessType())) {
+                    // 注释代码为返回tokenId的情况
+//                    String[] split = txCallback.getBusinessId().split(",");
+//                    params.put(orderType, split[0]);
+//                    params.put(tokenId, split[1]);
                     params.put(orderType, txCallback.getBusinessId());
                 }
             } else if (StringUtils.isEmpty(txHash)) {
@@ -84,7 +89,7 @@ public class CallbackScheduler extends BaseScheduler {
 
     }
 
-    @Scheduled(initialDelay = 5 * 1000, fixedDelay = 5 * 1000)
+//    @Scheduled(initialDelay = 5 * 1000, fixedDelay = 5 * 1000)
     private void reCallback() {
         log.info("reCallback begin...");
         TxCallback record = new TxCallback();
@@ -112,7 +117,9 @@ public class CallbackScheduler extends BaseScheduler {
                 if (authType.equals(txCallback.getBusinessType())) {
                     params.put(authType, txCallback.getBusinessId());
                 } else if (orderType.equals(txCallback.getBusinessType())) {
-                    params.put(orderType, txCallback.getBusinessId());
+                    String[] split = txCallback.getBusinessId().split(",");
+                    params.put(orderType, split[0]);
+                    params.put(tokenId, split[1]);
                 }
             } else if (StringUtils.isEmpty(txHash)) {
                 // 只有存证，直接回调
